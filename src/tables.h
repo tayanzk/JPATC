@@ -9,9 +9,20 @@
 #include <inttypes.h>
 
 enum {
-	kAlphabet_Hiragana = (1 << 0),
-	kAlphabet_Katakana = (1 << 1)
+  kAlphabet_Hiragana = (1 << 0),
+  kAlphabet_Katakana = (1 << 1),
+  kAlphabet_Cyrillic = (1 << 2)   /* RU */
 };
+
+typedef struct _s_table {
+  uint32_t elements;
+  const wchar_t * alphabet;
+  const wchar_t * *translation;
+} table_t;
+
+/*
+** Alphabets
+*/
 
 const wchar_t hiragana[] = {
   L'あ',  L'い',  L'う',  L'え',  L'お',
@@ -49,24 +60,52 @@ const wchar_t katakana[] = {
   L'ン'
 };
 
-const wchar_t *translations[] = {
+const wchar_t cyrillic[] = {
+  L'я', L'в', L'е', L'р', L'т',
+  L'ы', L'у', L'и', L'о', L'п',
+  L'а', L'с', L'д', L'ф', L'г',
+  L'х', L'й', L'к', L'л', L'з',
+  L'ц', L'ж', L'б', L'н', L'м',
+  L'ё', L'ш', L'щ', L'ч', L'ю',
+  L'э', L'ь', L'ъ'
+};
+
+/*
+** Translations
+*/
+
+#define JP1_ELEMENTS 71
+const wchar_t *jp1_translations[JP1_ELEMENTS] = {
   L"a",   L"i",   L"u",   L"e",   L"o",
-	L"ka",  L"ki",  L"ku",  L"ke",  L"ko",
-	L"ga",  L"gi",  L"gu",  L"ge",  L"go",
-	L"sa",  L"si",  L"su",  L"se",  L"so",
-	L"za",  L"zi",  L"zu",  L"ze",  L"zo",
-	L"ta",  L"chi", L"tsu", L"te",  L"to",
-	L"da",  L"di",  L"du",  L"de",  L"do",
-	L"na",  L"ni",  L"nu",  L"ne",  L"no",
-	L"ha",  L"hi",  L"hu",  L"he",  L"ho",
-	L"ba",  L"bi",  L"bu",  L"be",  L"bo",
-	L"pa",  L"pi",  L"pu",  L"pe",  L"po",
-	L"ma",  L"mi",  L"mu",  L"me",  L"mo",
-	L"ya",  L"yu",  L"yo",  L"ra",  L"ri",
+  L"ka",  L"ki",  L"ku",  L"ke",  L"ko",
+  L"ga",  L"gi",  L"gu",  L"ge",  L"go",
+  L"sa",  L"si",  L"su",  L"se",  L"so",
+  L"za",  L"zi",  L"zu",  L"ze",  L"zo",
+  L"ta",  L"chi", L"tsu", L"te",  L"to",
+  L"da",  L"di",  L"du",  L"de",  L"do",
+  L"na",  L"ni",  L"nu",  L"ne",  L"no",
+  L"ha",  L"hi",  L"hu",  L"he",  L"ho",
+  L"ba",  L"bi",  L"bu",  L"be",  L"bo",
+  L"pa",  L"pi",  L"pu",  L"pe",  L"po",
+  L"ma",  L"mi",  L"mu",  L"me",  L"mo",
+  L"ya",  L"yu",  L"yo",  L"ra",  L"ri",
   L"ru",  L"re",  L"ro",  L"wa",  L"wo",
   L"n", 
 };
 
+/* Less Accurate */
+#define CY_ELEMENTS 31 /* doesn't include `Ь, Ъ` */
+const wchar_t *cy_translations[CY_ELEMENTS] = {
+  L"ya",  L"ve",  L"ye",  L"r",   L"te",
+  L"y",   L"oo",  L"i",   L"o",   L"pe",
+  L"a",   L"es",  L"de",  L"ef",  L"ge",
+  L"kh",  L"ei",  L"ka",  L"l",   L"ze",
+  L"ts",  L"zh",  L"be",  L"en",  L"em",
+  L"yo",  L"sh",  L"sch", L"ch",  L"yu",
+  L"eh"
+};
+
+/* unused */
 uint32_t mistakes[71][2];
 
 #endif

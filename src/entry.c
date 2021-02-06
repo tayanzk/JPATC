@@ -6,10 +6,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <locale.h>
-#include <string.h>
 #include <wctype.h>
 #include <wchar.h>
-#include <uchar.h>
 #include <time.h>
 
 #include "tables.h"
@@ -24,13 +22,11 @@ extern int wscanf(const wchar_t *__restrict __format, ...);
 ** Macros
 */
 
-#define ELEMENTS 71
-
-static const wchar_t *g_tables[2];
+static table_t g_tables[12];
 static uint32_t g_tables_count;
 
-static uint32_t g_alphabets           = kAlphabet_Hiragana | kAlphabet_Katakana;
-static uint32_t g_questions           = 3;
+static uint32_t g_alphabets           = kAlphabet_Cyrillic;
+static uint32_t g_questions           = 7;
 static uint32_t g_force_accuracy      = 1;
 static uint32_t g_show_translation    = 1;
 static uint32_t g_show_incorrect      = 1;
@@ -45,7 +41,7 @@ static uint32_t g_inputs, g_incorrect;
 void arg_cmd_qe(int c, char **v) {
   char *buffer = NULL;
   
-  assert(c < 2);
+  assert(c == 2);
   g_questions = strtol(v[1], &buffer, 10);
 }
 
@@ -63,7 +59,7 @@ void arg_cmd_jp(int c, char **v) {
   int i, option;
   
   (void)v;
-  assert(c < 2);
+  assert(c >= 2);
 
   for(i = 0; i < c; i++) {
     option = 1;
@@ -77,34 +73,44 @@ void arg_cmd_jp(int c, char **v) {
 
 void setup_tables() {
   if(g_alphabets & kAlphabet_Hiragana) {
-    g_tables[g_tables_count++] = &hiragana[0];
+    table_t hiragana_T = { JP1_ELEMENTS, &hiragana[0], &jp1_translations[0] };
+    g_tables[g_tables_count++] = hiragana_T;
   }
 
   if(g_alphabets & kAlphabet_Katakana) {
-    g_tables[g_tables_count++] = &katakana[0];
+    table_t katakana_T = { JP1_ELEMENTS, &katakana[0], &jp1_translations[0] };
+    g_tables[g_tables_count++] = katakana_T;
+  }
+
+  if(g_alphabets & kAlphabet_Cyrillic) {
+    table_t cyrillic_T = { CY_ELEMENTS, &cyrillic[0], &cy_translations[0] };
+    g_tables[g_tables_count++] = cyrillic_T;
   }
 }
 
 const wchar_t *show_random() {
-  int table;
+  table_t *table;
+  uint32_t index;
   wchar_t c;
 
+  index = rand() % g_tables_count;
+  table = &g_tables[index];
+
+  /* pick one that hasn't yet been chosen */
   do {
-    g_current = rand() % ELEMENTS;
+    g_current = rand() % table->elements;
   } while(g_current == g_last);
   g_last = g_current;
 
-  table = rand() % g_tables_count;
-  c = g_tables[table][g_current];
-
+  c = table->alphabet[g_current];
   wprintf(L"%lc", c);
 
   if(g_show_translation) {
-    wprintf(L" => %ls", translations[g_current]);
+    wprintf(L" => %ls", table->translation[g_current]);
   }
 
   putwchar(L'\n');
-  return translations[g_current];
+  return table->translation[g_current];
 }
 
 void show_incorrect(const wchar_t *t, const wchar_t *i) {
@@ -142,7 +148,7 @@ int main(int argc, char *argv[]) {
 
   for(q = 0; q < g_questions; q++) {
     const wchar_t *eng = show_random();
-    
+
 retry:
     input = &buffer[0];
     wprintf(L" > ");
