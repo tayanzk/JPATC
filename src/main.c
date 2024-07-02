@@ -56,6 +56,7 @@ void arg_a(const char *arg)
   case 'k': option = ALPHABET_KATAKANA; break;
   case 'h': option = ALPHABET_HIRAGANA; break;
   case 'c': option = ALPHABET_CYRILLIC; break;
+  default: printf("Invalid table in arugment: -a (k, h, or c)\n"); exit(-1);
   }
 
   g_alphabets |= option;
@@ -63,7 +64,15 @@ void arg_a(const char *arg)
 
 void arg_q(const char *arg)
 {
-  g_questions = strtol(arg, NULL, 10);
+  long questions = strtol(arg, NULL, 10);
+
+  if (questions <= 0)
+  {
+    printf("Invalid integer in arugment: -q (>0)\n");
+    exit(-1);
+  }
+
+  g_questions = questions;
 }
 
 /*
@@ -88,6 +97,12 @@ void setup_tables()
   {
     table_t table_cyrillic = { CY_ELEMENTS, &cyrillic[0], &cy_translations[0] };
     g_tables[g_tables_count++] = table_cyrillic;
+  }
+
+  if (g_tables_count == 0)
+  {
+    printf("No tables were specified to practice: -a (k, h, or c)\n");
+    exit(-1);
   }
 }
 
@@ -156,10 +171,22 @@ int main(int argc, char *argv[])
       arg_l();
     
     if (!strncmp(argv[i], "-a", 2))
-      arg_a(argv[++i]);
+      if (++i < argc)
+        arg_a(argv[i]);
+      else
+      {
+        printf("Expected table after argument: -a (k, h, or c)\n");
+        exit(-1);
+      }
 
     if (!strncmp(argv[i], "-q", 2))
-      arg_q(argv[++i]);
+      if (++i < argc)
+        arg_q(argv[i]);
+      else
+      {
+        printf("Expected integer after argument: -q (>0)\n");
+        exit(-1);
+      }
   }
 
 
@@ -180,7 +207,7 @@ retry:
     for (; *input; ++input)
       *input = towlower(*input);
 
-    if(wcscmp(eng, &buffer[0]))
+    if(wcsncmp(eng, &buffer[0], 64))
     {
       show_incorrect(eng, &buffer[0]);
       g_incorrect++;
