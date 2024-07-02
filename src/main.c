@@ -56,7 +56,7 @@ void arg_a(const char *arg)
   case 'k': option = ALPHABET_KATAKANA; break;
   case 'h': option = ALPHABET_HIRAGANA; break;
   case 'c': option = ALPHABET_CYRILLIC; break;
-  default: printf("Invalid table in arugment: -a (k, h, or c)\n"); exit(-1);
+  default: printf("Invalid table in argument: -a (k, h, or c)\n"); exit(-1);
   }
 
   g_alphabets |= option;
@@ -68,7 +68,7 @@ void arg_q(const char *arg)
 
   if (questions <= 0)
   {
-    printf("Invalid integer in arugment: -q (>0)\n");
+    printf("Invalid integer in argument: -q (>0)\n");
     exit(-1);
   }
 
