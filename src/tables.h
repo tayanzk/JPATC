@@ -2,29 +2,33 @@
 ** JPAT C
 */
 
-#ifndef _tables_h
-#define _tables_h 1
+#ifndef _TABLES_h
+#define _TABLES_h 1
 
 #include <wchar.h>
-#include <inttypes.h>
+#include <stdint.h>
 
-enum {
-  kAlphabet_Hiragana = (1 << 0),
-  kAlphabet_Katakana = (1 << 1),
-  kAlphabet_Cyrillic = (1 << 2)   /* RU */
+enum
+{
+  ALPHABET_NONE     = 0,
+  ALPHABET_HIRAGANA = (1 << 0),
+  ALPHABET_KATAKANA = (1 << 1),
+  ALPHABET_CYRILLIC = (1 << 2)   /* RU */
 };
 
-typedef struct _s_table {
-  uint32_t elements;
-  const wchar_t * alphabet;
-  const wchar_t * *translation;
+typedef struct table_t
+{
+  uint32_t        elements;
+  const wchar_t  *alphabet;
+  const wchar_t **translation;
 } table_t;
 
 /*
 ** Alphabets
 */
 
-const wchar_t hiragana[] = {
+const wchar_t hiragana[] =
+{
   L'あ',  L'い',  L'う',  L'え',  L'お',
   L'か',  L'き',  L'く',  L'け',  L'こ',
   L'が',  L'ぎ',  L'ぐ',  L'げ',  L'ご',
@@ -42,7 +46,8 @@ const wchar_t hiragana[] = {
   L'ん'
 };
 
-const wchar_t katakana[] = {
+const wchar_t katakana[] =
+{
   L'ア',  L'イ',  L'ウ',  L'エ',  L'オ',
   L'カ',  L'キ',  L'ク',  L'ケ',  L'コ',
   L'ガ',  L'ギ',  L'グ',  L'ゲ',  L'ゴ',
@@ -60,7 +65,8 @@ const wchar_t katakana[] = {
   L'ン'
 };
 
-const wchar_t cyrillic[] = {
+const wchar_t cyrillic[] =
+{
   L'я', L'в', L'е', L'р', L'т',
   L'ы', L'у', L'и', L'о', L'п',
   L'а', L'с', L'д', L'ф', L'г',
@@ -96,16 +102,13 @@ const wchar_t *jp1_translations[JP1_ELEMENTS] = {
 /* Less Accurate */
 #define CY_ELEMENTS 31 /* doesn't include `Ь, Ъ` */
 const wchar_t *cy_translations[CY_ELEMENTS] = {
-  L"ya",  L"ve",  L"ye",  L"r",   L"te",
-  L"y",   L"oo",  L"i",   L"o",   L"pe",
-  L"a",   L"es",  L"de",  L"ef",  L"ge",
-  L"kh",  L"ei",  L"ka",  L"l",   L"ze",
-  L"ts",  L"zh",  L"be",  L"en",  L"em",
+  L"ya",  L"v",   L"ye",  L"r",   L"t",
+  L"y",   L"oo",  L"i",   L"o",   L"p",
+  L"a",   L"s",   L"d",   L"f",   L"g",
+  L"kh",  L"ei",  L"k",   L"l",   L"z",
+  L"ts",  L"zh",  L"b",   L"n",   L"m",
   L"yo",  L"sh",  L"sch", L"ch",  L"yu",
   L"eh"
 };
-
-/* unused */
-uint32_t mistakes[71][2];
 
 #endif
